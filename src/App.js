@@ -7,6 +7,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.onTick = this.onTick.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
 
     // set up client socket
     const socket = openSocket("http://localhost:8000");
@@ -15,28 +16,48 @@ class App extends Component {
     // set state
     this.state = {
       socket: socket,
-      onTickCalls: 0
     };
+
+    window.addEventListener("keydown", this.onKeyDown);
   }
 
-  onTick() {
-    this.setState( (prevState, props) => {
-      return { onTickCalls: prevState.onTickCalls + 1 };
-    });
+  onTick(data) {
+    var players = JSON.parse(data);
+    var canvas = this.refs.canvas;
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // draw players
+    for(let id in players) {
+      let p = players[id];
+      ctx.fillRect(p.xPos, -p.yPos, p.radius, p.radius);
+    }
+  }
+
+  onKeyDown(e) {
+    let socket = this.state.socket;
+    if(e.key === "ArrowUp") {
+      socket.emit('move', socket.id, "up");
+    }
+    else if (e.key === "ArrowDown") {
+      socket.emit('move', socket.id, "down");
+    }
+    else if (e.key === "ArrowLeft") {
+      socket.emit('move', socket.id, "left");
+    }
+    else if (e.key === "ArrowRight") {
+      socket.emit('move', socket.id, "right");
+    }
   }
 
   render() {
-    console.log(this.state.socket);
     return (
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Agar Clone</h2>
         </div>
-        <p className="App-intro">
-          On tick called {this.state.onTickCalls} time(s)
-        </p>
-        <canvas className="canvas"></canvas>
+        <canvas height="100" width="100" ref="canvas" className="canvas"></canvas>
       </div>
     );
   }
