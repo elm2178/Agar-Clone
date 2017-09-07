@@ -30,7 +30,10 @@ class App extends Component {
     // draw players
     for(let id in players) {
       let p = players[id];
-      ctx.fillRect(p.xPos, -p.yPos, p.radius, p.radius);
+      ctx.beginPath();
+      ctx.rect(p.xPos, p.yPos, p.radius, p.radius);
+      ctx.fillStyle = id === this.state.socket.id ? "blue" : "red";
+      ctx.fill();
     }
   }
 

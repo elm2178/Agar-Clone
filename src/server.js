@@ -1,5 +1,7 @@
 import { Player } from './lib/player.js';
 const io = require('socket.io')();
+const HEIGHT = 100;
+const WIDTH = 100;
 
 var players = {};
 
@@ -7,7 +9,7 @@ io.on('connection', (socket) => {
   console.log("client connected");
 
   // create new player
-  var player = new Player(0, 0, 1, socket.id);
+  var player = new Player(0, 0, 10, socket.id);
   // update hashmap
   players[socket.id] = player;
   
@@ -20,10 +22,10 @@ io.on('connection', (socket) => {
       return;
 
     if(dir === "up") {
-      p.yPos += 1;
+      p.yPos -= 1;
     }
     else if(dir === "down") {
-      p.yPos -= 1;
+      p.yPos += 1;
     }
     else if(dir === "right") {
       p.xPos += 1;
@@ -31,6 +33,8 @@ io.on('connection', (socket) => {
     else if(dir === "left") {
       p.xPos -= 1;
     }
+
+    p.capPosition(0, 0, WIDTH, HEIGHT);
     players[id] = p;
   });
 });
