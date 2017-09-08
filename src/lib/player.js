@@ -1,11 +1,12 @@
 export class Player {
-  constructor(xPos, yPos, width, id) {
+  constructor(xPos, yPos, width, startTime, id) {
     this.xPos = xPos;
     this.yPos = yPos;
     this.xVel = 0;
     this.yVel = 0;
     this.width = width;
     this.id = id;
+    this.startTime = startTime; 
   }
 
   capPosition(lowerX, lowerY, upperX, upperY)
@@ -32,6 +33,11 @@ export class Player {
   }
 
   collidesWith(other) {
+    let currTime = Date.now();
+    if(this.startTime > currTime || other.startTime > currTime) {
+      return false;
+    }
+
     if(other.xPos >= (this.xPos + this.width))  {
       return false;
     }

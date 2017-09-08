@@ -8,11 +8,19 @@ export class World {
     this.VEL = 20;
     this.GROWTH = 10;
     this.FRICTION = .982;
+    this.IMMUNE = 5;
     this.players = {};
   }
 
   createPlayer(id) {
-    this.players[id] = new Player(0, 0, this.PLAYER_WIDTH, id);
+    // random spawn position
+    let xPos = Math.random() * this.HEIGHT;
+    let yPos = Math.random() * this.WIDTH;
+
+    let startTime = Date.now();
+    startTime += 1000 * this.IMMUNE;
+
+    this.players[id] = new Player(xPos, yPos, this.PLAYER_WIDTH, startTime, id);
   }
 
   removePlayer(id) {
