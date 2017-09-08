@@ -2,6 +2,8 @@ export class Player {
   constructor(xPos, yPos, width, socketId) {
     this.xPos = xPos;
     this.yPos = yPos;
+    this.xVel = 0;
+    this.yVel = 0;
     this.width = width;
     this.id = socketId;
   }
@@ -12,6 +14,21 @@ export class Player {
     this.yPos = Math.max(this.yPos, lowerY);
     this.xPos = Math.min(this.xPos, upperX - this.width);
     this.yPos = Math.min(this.yPos, upperY - this.width);
+  }
+
+  setSpeed(xVel, yVel) {
+    this.xVel = xVel;
+    this.yVel = yVel;
+  }
+
+  step(timeDelta, friction) {
+    // update vel
+    this.xVel *= friction;
+    this.yVel *= friction;
+
+    // update pos
+    this.xPos += this.xVel * timeDelta;
+    this.yPos += this.yVel * timeDelta;
   }
 
   collidesWith(other) {

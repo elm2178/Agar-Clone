@@ -4,10 +4,13 @@ const io = require('socket.io')();
 const HEIGHT = 600;
 const WIDTH = 600;
 const PLAYER_WIDTH = 10;
-const STEP = 2;
+const VEL = 20;
 const GROWTH = 10;
+const FRICTION = .982;
+const DELTA = .1;
 
 var players = {};
+var timedelta = 0;
 
 function handleCollisions(player) {
   let collisionFound = false;
@@ -51,6 +54,18 @@ function removePlayer(id, message) {
 }
 
 function update() {
+  // step for each player
+  for(let id in players) {
+    players[id].step(DELTA, FRICTION);
+    players[id].capPosition(0, 0, WIDTH, HEIGHT);
+  }
+
+  // handle collision for each player
+  for(let id in players) {
+    handleCollisions(players[id]);
+  }
+
+  // send updates
   io.emit('update', JSON.stringify(players));
 }
 
@@ -59,7 +74,6 @@ io.on('connection', (socket) => {
 
   // create new player
   var player = new Player(0, 0, PLAYER_WIDTH, socket.id);
-  // update hashmap
   players[socket.id] = player;
   
   // move callback
@@ -71,33 +85,28 @@ io.on('connection', (socket) => {
       return;
 
     if(dir === "up") {
-      p.yPos -= STEP;
+      p.yVel = -VEL;
     }
     else if(dir === "down") {
-      p.yPos += STEP;
+      p.yVel = VEL;
     }
     else if(dir === "right") {
-      p.xPos += STEP;
+      p.xVel = VEL;
     }
     else if(dir === "left") {
-      p.xPos -= STEP;
+      p.xVel = -VEL;
     }
-
-    p.capPosition(0, 0, WIDTH, HEIGHT);
-    players[id] = p;
-    handleCollisions(p);
-    update();
   });
 
   // disconnect callback
   socket.on('disconnect', () => {
     delete players[socket.id];
-    update();
   });
-
-  // update for newly connected user
-  update();
 });
+
+setInterval(function() {
+  update();
+}, DELTA * 100)
 
 const port = 8000;
 io.listen(port);
