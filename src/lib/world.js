@@ -5,9 +5,10 @@ export class World {
     this.HEIGHT = 600;
     this.WIDTH = 600;
     this.PLAYER_WIDTH = 10;
-    this.VEL = 20;
+    this.VEL = 1;
+    this.VEL_CAP = 40;
     this.GROWTH = 10;
-    this.FRICTION = .982;
+    this.FRICTION = .973;
     this.IMMUNE = 5;
     this.players = {};
   }
@@ -31,30 +32,36 @@ export class World {
     return this.players;
   }
 
-  movePlayer(id, dir) {
+  getPlayer(id) {
+    return this.players[id];
+  }
+
+  movePlayer(id) {
     let p = this.players[id];
     
     // ignore invalid move commands
     if(!p)
       return;
 
-    if(dir === "up") {
-      p.yVel = -this.VEL;
+    if(p.movement.up) {
+      p.yVel += -this.VEL;
     }
-    else if(dir === "down") {
-      p.yVel = this.VEL;
+    if(p.movement.down) {
+      p.yVel += this.VEL;
     }
-    else if(dir === "right") {
-      p.xVel = this.VEL;
+    if(p.movement.right) {
+      p.xVel += this.VEL;
     }
-    else if(dir === "left") {
-      p.xVel = -this.VEL;
+    if(p.movement.left) {
+      p.xVel += -this.VEL;
     }
+    p.capVelocity(-this.VEL_CAP, -this.VEL_CAP, this.VEL_CAP, this.VEL_CAP);
   }
 
   step(timeDelta) {
     // step for each player
     for(let id in this.players) {
+      this.movePlayer(id);
       this.players[id].step(timeDelta, this.FRICTION);
       this.players[id].capPosition(0, 0, this.WIDTH, this.HEIGHT);
     }

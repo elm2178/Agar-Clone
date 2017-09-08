@@ -8,6 +8,7 @@ class App extends Component {
     super(props);
     this.onUpdate = this.onUpdate.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
 
     // set up client socket
     const socket = openSocket("http://localhost:8000");
@@ -23,13 +24,12 @@ class App extends Component {
     };
 
     window.addEventListener("keydown", this.onKeyDown);
+    window.addEventListener("keyup", this.onKeyUp);
   }
 
   getEnemyRGB()
   {
     let redR = 255;
-    let redG = 0;
-    let redB = 0;
 
     let orangeR = 160;
     let orangeG = 161;
@@ -84,17 +84,21 @@ class App extends Component {
 
   onKeyDown(e) {
     let socket = this.state.socket;
-    if(e.key === "ArrowUp") {
-      socket.emit('move', socket.id, "up");
+    if( e.key === "ArrowUp" || 
+      e.key === "ArrowDown" ||
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight" ) {
+      socket.emit('keydown', socket.id, e.key);
     }
-    else if (e.key === "ArrowDown") {
-      socket.emit('move', socket.id, "down");
-    }
-    else if (e.key === "ArrowLeft") {
-      socket.emit('move', socket.id, "left");
-    }
-    else if (e.key === "ArrowRight") {
-      socket.emit('move', socket.id, "right");
+  }
+
+  onKeyUp(e) {
+    let socket = this.state.socket;
+    if( e.key === "ArrowUp" || 
+      e.key === "ArrowDown" ||
+      e.key === "ArrowLeft" ||
+      e.key === "ArrowRight" ) {
+      socket.emit('keyup', socket.id, e.key);
     }
   }
 

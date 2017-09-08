@@ -7,6 +7,14 @@ export class Player {
     this.width = width;
     this.id = id;
     this.startTime = startTime; 
+
+    // current movement status
+    this.movement = {
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+    };
   }
 
   capPosition(lowerX, lowerY, upperX, upperY)
@@ -15,6 +23,14 @@ export class Player {
     this.yPos = Math.max(this.yPos, lowerY);
     this.xPos = Math.min(this.xPos, upperX - this.width);
     this.yPos = Math.min(this.yPos, upperY - this.width);
+  }
+
+  capVelocity(lowerX, lowerY, upperX, upperY)
+  {
+    this.xVel = Math.max(this.xVel, lowerX);
+    this.yVel = Math.max(this.yVel, lowerY);
+    this.xVel = Math.min(this.xVel, upperX);
+    this.yVel = Math.min(this.yVel, upperY);
   }
 
   setSpeed(xVel, yVel) {
