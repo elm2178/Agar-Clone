@@ -6,22 +6,32 @@ import openSocket from 'socket.io-client';
 class App extends Component {
   constructor(props) {
     super(props);
-    this.onTick = this.onTick.bind(this);
+    this.onUpdate = this.onUpdate.bind(this);
+    this.onGameOver = this.onGameOver.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
 
     // set up client socket
     const socket = openSocket("http://localhost:8000");
-    socket.on('tick', this.onTick);
+    socket.on('update', this.onUpdate);
+    socket.on('gameover', this.onGameOver);
 
     // set state
     this.state = {
       socket: socket,
+      isGameOver: false,
     };
 
     window.addEventListener("keydown", this.onKeyDown);
   }
 
-  onTick(data) {
+  onGameOver() {
+    console.log("game over");
+    this.setState({
+      isGameOver: true,
+    });
+  }
+
+  onUpdate(data) {
     var players = JSON.parse(data);
     var canvas = this.refs.canvas;
     var ctx = canvas.getContext("2d");
@@ -31,7 +41,7 @@ class App extends Component {
     for(let id in players) {
       let p = players[id];
       ctx.beginPath();
-      ctx.rect(p.xPos, p.yPos, p.radius, p.radius);
+      ctx.rect(p.xPos, p.yPos, p.width, p.width);
       ctx.fillStyle = id === this.state.socket.id ? "blue" : "red";
       ctx.fill();
     }
@@ -54,13 +64,18 @@ class App extends Component {
   }
 
   render() {
+    let gameOverMessage = ""
+    if(this.state.isGameOver) {
+      gameOverMessage = "You lost! Thanks for playing.";
+    }
     return (
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Agar Clone</h2>
+          <p>{gameOverMessage}</p>
         </div>
-        <canvas height="100" width="100" ref="canvas" className="canvas"></canvas>
+        <canvas height="600" width="600" ref="canvas" className="canvas"></canvas>
       </div>
     );
   }
