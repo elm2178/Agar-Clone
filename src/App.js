@@ -7,13 +7,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.onUpdate = this.onUpdate.bind(this);
-    this.onGameOver = this.onGameOver.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
 
     // set up client socket
     const socket = openSocket("http://localhost:8000");
     socket.on('update', this.onUpdate);
-    socket.on('gameover', this.onGameOver);
 
     // set state
     this.state = {
@@ -24,18 +22,18 @@ class App extends Component {
     window.addEventListener("keydown", this.onKeyDown);
   }
 
-  onGameOver() {
-    console.log("game over");
-    this.setState({
-      isGameOver: true,
-    });
-  }
-
   onUpdate(data) {
     var players = JSON.parse(data);
     var canvas = this.refs.canvas;
     var ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // check if you are still alive
+    if(!players[this.state.socket.id]) {
+      this.setState({
+        isGameOver: true,
+      });
+    }
 
     // draw players
     for(let id in players) {

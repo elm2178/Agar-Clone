@@ -1,11 +1,11 @@
 export class Player {
-  constructor(xPos, yPos, width, socketId) {
+  constructor(xPos, yPos, width, id) {
     this.xPos = xPos;
     this.yPos = yPos;
     this.xVel = 0;
     this.yVel = 0;
     this.width = width;
-    this.id = socketId;
+    this.id = id;
   }
 
   capPosition(lowerX, lowerY, upperX, upperY)
