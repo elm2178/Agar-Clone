@@ -2,8 +2,8 @@ import { Player } from './player.js';
 
 export class World {
   constructor(width, height) {
-    this.HEIGHT = 600;
-    this.WIDTH = 600;
+    this.HEIGHT = height;
+    this.WIDTH = width;
     this.PLAYER_WIDTH = 10;
     this.VEL = 1;
     this.VEL_CAP = 40;

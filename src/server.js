@@ -2,14 +2,15 @@ import { World } from './lib/world.js';
 const io = require('socket.io')();
 
 const DELTA = .1;
-const HEIGHT = 600;
-const WIDTH = 600;
+const HEIGHT = 1000;
+const WIDTH = 1000;
 
 var world = new World(HEIGHT, WIDTH);
 
 
 io.on('connection', (socket) => {
   console.log("client connected");
+  socket.emit("init", {width: WIDTH, height: HEIGHT});
 
   // create new player
   world.createPlayer(socket.id);
