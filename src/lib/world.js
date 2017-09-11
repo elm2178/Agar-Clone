@@ -1,5 +1,5 @@
 import { Player } from './player.js';
-import { Food } from './food.js';
+import { Food, FoodManager } from './food.js';
 
 export class World {
   constructor(width, height) {
@@ -12,7 +12,7 @@ export class World {
     this.FRICTION = .973;
     this.IMMUNE = 5;
     this.players = {};
-    this.food = [];
+    this.foodManager = new FoodManager(2, this.PLAYER_WIDTH/2, this.WIDTH, this.HEIGHT);
   }
 
   createPlayer(id) {
@@ -35,7 +35,7 @@ export class World {
   }
 
   getFood() {
-    return this.food;
+    return this.foodManager.getFood();
   }
 
   getPlayer(id) {
@@ -57,7 +57,7 @@ export class World {
     for(let id in this.players) {
       let player = this.players[id];
       let world = this;
-      this.food = this.food.filter(function(f) {
+      this.foodManager.food = this.foodManager.food.filter(function(f) {
         let collision = player.collidesWithFood(f);
         if(collision) {
           // handle collision
@@ -75,6 +75,9 @@ export class World {
     for(let id in this.players) {
       this.handlePlayerCollisions(this.players[id]);
     }
+
+    // generate new food
+    this.foodManager.update();
   }
 
   handlePlayerCollisions(player) {
