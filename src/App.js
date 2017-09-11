@@ -60,9 +60,11 @@ class App extends Component {
 
   onUpdate(data) {
     const colors = this.state.colors;
-    var players = JSON.parse(data);
-    var canvas = this.refs.canvas;
-    var ctx = canvas.getContext("2d");
+    let gameState = JSON.parse(data);
+    let players = gameState.players;
+    let food = gameState.food;
+    let canvas = this.refs.canvas;
+    let ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // check if you are still alive
@@ -82,7 +84,7 @@ class App extends Component {
 
       // draw rect
       ctx.beginPath();
-      ctx.rect(p.xPos, p.yPos, p.width, p.width);
+      ctx.rect(p.xPos, p.yPos, p.width, p.height);
       // get appropriate color
       if(id === this.state.socket.id) {
         ctx.fillStyle = "rgba(27, 72, 124, " + alpha +  ")";
@@ -92,6 +94,14 @@ class App extends Component {
       }
       ctx.fill();
     }
+
+    // draw food
+    food.forEach(function(f) {
+      ctx.beginPath();
+      ctx.arc(f.xPos, f.yPos, f.radius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = 'green';
+      ctx.fill();
+    });
 
     this.setState({
       colors: colors,

@@ -16,7 +16,6 @@ io.on('connection', (socket) => {
 
   // key down callback
   socket.on('keydown', (id, key) => {
-    console.log(key);
     let player = world.getPlayer(id);
     // ignore invalid commands
     if(!player)
@@ -60,9 +59,19 @@ io.on('connection', (socket) => {
 setInterval(function() {
   // update world
   world.step(DELTA);
+
+  // get world objects that need to be rendered
+  let food = world.getFood();
   let players = world.getPlayers();
+
+  // create a game state
+  let gs = {
+    food: food, 
+    players: players,
+  }
+
   // send updates
-  io.emit('update', JSON.stringify(players));
+  io.emit('update', JSON.stringify(gs));
 }, DELTA * 100)
 
 const port = 8000;

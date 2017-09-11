@@ -1,16 +1,18 @@
 import { Player } from './player.js';
+import { Food } from './food.js';
 
 export class World {
   constructor(width, height) {
     this.HEIGHT = height;
     this.WIDTH = width;
     this.PLAYER_WIDTH = 10;
-    this.VEL = 1;
+    this.VEL_STEP = 1;
     this.VEL_CAP = 40;
     this.GROWTH = 10;
     this.FRICTION = .973;
     this.IMMUNE = 5;
     this.players = {};
+    this.food = [];
   }
 
   createPlayer(id) {
@@ -32,38 +34,41 @@ export class World {
     return this.players;
   }
 
+  getFood() {
+    return this.food;
+  }
+
   getPlayer(id) {
     return this.players[id];
   }
 
-  movePlayer(id) {
-    let p = this.players[id];
-    
-    // ignore invalid move commands
-    if(!p)
-      return;
-
-    if(p.movement.up) {
-      p.yVel += -this.VEL;
-    }
-    if(p.movement.down) {
-      p.yVel += this.VEL;
-    }
-    if(p.movement.right) {
-      p.xVel += this.VEL;
-    }
-    if(p.movement.left) {
-      p.xVel += -this.VEL;
-    }
-    p.capVelocity(-this.VEL_CAP, -this.VEL_CAP, this.VEL_CAP, this.VEL_CAP);
-  }
-
   step(timeDelta) {
+
     // step for each player
     for(let id in this.players) {
-      this.movePlayer(id);
-      this.players[id].step(timeDelta, this.FRICTION);
-      this.players[id].capPosition(0, 0, this.WIDTH, this.HEIGHT);
+      let player = this.players[id];
+      player.updateVelocity(this.VEL_STEP);
+      player.capVelocity(-this.VEL_CAP, -this.VEL_CAP, this.VEL_CAP, this.VEL_CAP);
+      player.step(timeDelta, this.FRICTION);
+      player.capPosition(0, 0, this.WIDTH, this.HEIGHT);
+    }
+
+    // handle food collisions
+    for(let id in this.players) {
+      let player = this.players[id];
+      let world = this;
+      this.food = this.food.filter(function(f) {
+        let collision = player.collidesWithFood(f);
+        if(collision) {
+          // handle collision
+          player.grow(world.GROWTH);
+          player.capPosition(0, 0, world.WIDTH, world.HEIGHT);
+
+          return false;
+        }
+
+        return true;
+      });
     }
 
     // handle collision for each player
@@ -77,7 +82,7 @@ export class World {
     let recursePlayer = undefined;
 
     for(let key in this.players) {
-      if(key !== player.id && player.collidesWithRect(this.players[key])) {
+      if(key !== player.id && player.collidesWithPlayer(this.players[key])) {
         let otherPlayer = this.players[key];
         collisionFound = true;
         
