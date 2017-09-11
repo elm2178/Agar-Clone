@@ -33,7 +33,6 @@ io.on('connection', (socket) => {
     }
   });
 
-
   // key up callback
   socket.on('keyup', (id, key) => {
     let player = world.getPlayer(id);
@@ -50,7 +49,6 @@ io.on('connection', (socket) => {
     } else if (key === "ArrowRight") {
       player.movement.right = false;
     }
-        console.log(player);
   });
 
   // disconnect callback

@@ -52,6 +52,15 @@ export class Player extends Rect {
     this.yPos += this.yVel * timeDelta;
   }
 
+  collidesWithRect(other) {
+    let currTime = Date.now();
+    if(this.startTime > currTime || other.startTime > currTime) {
+      return false;
+    }
+
+    return super.collidesWithRect(other);
+  }
+
   surviveTie() {
     return (Math.floor(Math.random() * 2) == 0);
   }
