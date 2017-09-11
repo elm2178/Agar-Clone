@@ -77,7 +77,7 @@ export class World {
     let recursePlayer = undefined;
 
     for(let key in this.players) {
-      if(key !== player.id && player.collidesWith(this.players[key])) {
+      if(key !== player.id && player.collidesWithRect(this.players[key])) {
         let otherPlayer = this.players[key];
         collisionFound = true;
         

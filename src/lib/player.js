@@ -1,10 +1,14 @@
-export class Player {
-  constructor(xPos, yPos, width, startTime, id) {
+import { Rect } from './rect.js';
+
+export class Player extends Rect {
+  constructor(xPos, yPos, length, startTime, id) {
+    super(xPos, yPos, length, length);
     this.xPos = xPos;
     this.yPos = yPos;
     this.xVel = 0;
     this.yVel = 0;
-    this.width = width;
+    this.width = length;
+    this.height = length;
     this.id = id;
     this.startTime = startTime; 
 
@@ -22,7 +26,7 @@ export class Player {
     this.xPos = Math.max(this.xPos, lowerX);
     this.yPos = Math.max(this.yPos, lowerY);
     this.xPos = Math.min(this.xPos, upperX - this.width);
-    this.yPos = Math.min(this.yPos, upperY - this.width);
+    this.yPos = Math.min(this.yPos, upperY - this.height);
   }
 
   capVelocity(lowerX, lowerY, upperX, upperY)
@@ -48,34 +52,13 @@ export class Player {
     this.yPos += this.yVel * timeDelta;
   }
 
-  collidesWith(other) {
-    let currTime = Date.now();
-    if(this.startTime > currTime || other.startTime > currTime) {
-      return false;
-    }
-
-    if(other.xPos >= (this.xPos + this.width))  {
-      return false;
-    }
-    else if(other.xPos + other.width <= this.xPos) {
-      return false;
-    }
-    else if(other.yPos >= this.yPos + this.width) {
-      return false;
-    }
-    else if(other.yPos + other.width <= this.yPos) {
-      return false;
-    }
-
-    return true;
-  }
-
   surviveTie() {
     return (Math.floor(Math.random() * 2) == 0);
   }
 
   grow(size) {
     this.width += size;
+    this.height += size;
     this.xPos -= Math.floor(size/2);
     this.yPos -= Math.floor(size/2);
   }

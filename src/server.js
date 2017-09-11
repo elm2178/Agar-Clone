@@ -7,7 +7,6 @@ const WIDTH = 1000;
 
 var world = new World(HEIGHT, WIDTH);
 
-
 io.on('connection', (socket) => {
   console.log("client connected");
   socket.emit("init", {width: WIDTH, height: HEIGHT});
@@ -32,7 +31,6 @@ io.on('connection', (socket) => {
     } else if (key === "ArrowRight") {
       player.movement.right = true;
     }
-    console.log(player);
   });
 
 

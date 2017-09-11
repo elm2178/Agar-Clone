@@ -119,7 +119,6 @@ class App extends Component {
   }
 
   onResize() {
-    console.log(window.innerHeight, window.innerWidth, window.outerHeight, window.outerWidth);
     let length = Math.min(window.innerWidth - 20, window.innerHeight - 210);
     let canvas = document.getElementsByClassName("canvas")[0];
     canvas.style.height = length + "px";
