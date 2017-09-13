@@ -6,10 +6,16 @@ var world = new World(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
 
 io.on('connection', (socket) => {
   console.log("client connected");
-  socket.emit("init", {width: Constants.WORLD_WIDTH, height: Constants.WORLD_HEIGHT});
 
   // create new player
   world.createPlayer(socket.id);
+
+  // send initialization back
+  socket.emit("init", {
+    player: world.getPlayer(socket.id),
+    worldWidth: Constants.WORLD_WIDTH, 
+    worldHeight: Constants.WORLD_HEIGHT,
+  });
 
   // key down callback
   socket.on('keydown', (id, key) => {

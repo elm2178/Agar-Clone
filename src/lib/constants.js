@@ -2,6 +2,8 @@ export class Constants {
   // world constants
   static WORLD_WIDTH = 1000;
   static WORLD_HEIGHT = 1000;
+  static CAM_WIDTH = 200;
+  static CAM_HEIGHT = 200;
   static FRICTION = .973;
   static VEL_STEP = 10;
   static VEL_CAP = 450;

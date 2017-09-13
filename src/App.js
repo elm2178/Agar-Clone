@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import openSocket from 'socket.io-client';
-import { ColorHelper } from './lib/colorHelper.js';
+import { Camera } from './lib/camera.js';
 
 class App extends Component {
   constructor(props) {
@@ -22,12 +22,8 @@ class App extends Component {
     this.state = {
       socket: socket,
       isGameOver: false,
-      width: 0,
-      height: 0,
+      camera: undefined,
     };
-
-    // create new color helper
-    this.colorHelper = new ColorHelper();
 
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
@@ -35,11 +31,10 @@ class App extends Component {
   }
 
   onInit(data) {
-    this.colorHelper.setPlayerColor(this.state.socket.id, ColorHelper.getRGBString(ColorHelper.DARK_BLUE));
+    let camera = new Camera(data.player, data.worldWidth, data.worldHeight);
 
     this.setState({
-      width: data.width,
-      height: data.height,
+      camera: camera,
     });
 
     this.onResize();
@@ -47,41 +42,16 @@ class App extends Component {
 
   onUpdate(data) {
     let gameState = JSON.parse(data);
-    let players = gameState.players;
-    let food = gameState.food;
     let canvas = this.refs.canvas;
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // check if you are still alive
-    if(!players[this.state.socket.id]) {
+    if(!gameState.players[this.state.socket.id]) {
       this.setState({
         isGameOver: true,
       });
     }
 
-    // draw players
-    for(let id in players) {
-      let p = players[id];
-      let color = this.colorHelper.getPlayerColor(p);
-      // draw rect
-      ctx.beginPath();
-      ctx.rect(p.xPos, p.yPos, p.width, p.height);
-      ctx.fillStyle = color;
-      ctx.fill();
-    }
-
-    // draw food
-    food.forEach(function(f) {
-      // get food color
-      let colorWeight = ColorHelper.getFoodColorWeight(f);
-      let color = ColorHelper.getColorFromGradient(ColorHelper.GREEN, ColorHelper.BROWN, colorWeight);
-      // draw circle
-      ctx.beginPath();
-      ctx.arc(f.xPos, f.yPos, f.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = ColorHelper.getRGBString(color);
-      ctx.fill();
-    });
+    this.state.camera.render(canvas, gameState);
   }
 
   onKeyDown(e) {
@@ -116,6 +86,13 @@ class App extends Component {
     if(this.state.isGameOver) {
       gameOverMessage = "You lost! Thanks for playing.";
     }
+
+    let height = 0;
+    let width = 0;
+    if(this.state.camera) {
+      height = this.state.camera.height;
+      width = this.state.camera.width;
+    }
     return (
       <div className="App">
         <div className="App-header">
@@ -124,7 +101,7 @@ class App extends Component {
           <p>{gameOverMessage}</p>
         </div>
         <div className="container">
-          <canvas height={this.state.height} width={this.state.width} ref="canvas" className="canvas"></canvas>
+          <canvas height={height} width={width} ref="canvas" className="canvas"></canvas>
         </div>
       </div>
     );
