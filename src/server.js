@@ -1,15 +1,12 @@
 import { World } from './lib/world.js';
+import { Constants } from './lib/constants.js';
 const io = require('socket.io')();
 
-const DELTA = .1;
-const HEIGHT = 1000;
-const WIDTH = 1000;
-
-var world = new World(HEIGHT, WIDTH);
+var world = new World(Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
 
 io.on('connection', (socket) => {
   console.log("client connected");
-  socket.emit("init", {width: WIDTH, height: HEIGHT});
+  socket.emit("init", {width: Constants.WORLD_WIDTH, height: Constants.WORLD_HEIGHT});
 
   // create new player
   world.createPlayer(socket.id);
@@ -58,7 +55,7 @@ io.on('connection', (socket) => {
 
 setInterval(function() {
   // update world
-  world.step(DELTA);
+  world.step(Constants.DELTA);
 
   // get world objects that need to be rendered
   let food = world.getFood();
@@ -72,7 +69,7 @@ setInterval(function() {
 
   // send updates
   io.emit('update', JSON.stringify(gs));
-}, DELTA * 100)
+}, Constants.DELTA * 1000)
 
 const port = 8000;
 io.listen(port);

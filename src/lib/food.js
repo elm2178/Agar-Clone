@@ -38,8 +38,8 @@ export class FoodManager {
   }
 
   spawnFood() {
-    let xPos = Math.random() * (Constants.WORLD_WIDTH - Constants.FOOD_RAD);
-    let yPos = Math.random() * (Constants.WORLD_HEIGHT - Constants.FOOD_RAD);
+    let xPos = Math.random() * (Constants.WORLD_WIDTH - 2*Constants.FOOD_RAD) + Constants.FOOD_RAD;
+    let yPos = Math.random() * (Constants.WORLD_HEIGHT - 2*Constants.FOOD_RAD) + Constants.FOOD_RAD;
 
     // add some randomness to food duration
     let duration = (Constants.FOOD_DUR * Math.random() + 5) * 1000;

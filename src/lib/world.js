@@ -5,7 +5,7 @@ import { Constants } from './constants.js';
 export class World {
   constructor() {
     this.players = {};
-    this.foodManager = new FoodManager(2, this);
+    this.foodManager = new FoodManager(Constants.FOOD_COUNT, this);
   }
 
   createPlayer(id) {

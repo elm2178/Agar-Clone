@@ -59,17 +59,16 @@ export class CollisionHelper {
     
     // check for simpler rect collision first
     if (this.rectCollision(circleRect, rect)) {
-      // see if there are any simple side collisions
       let rectCenterX = rect.xPos + rect.width / 2;
       let rectCenterY = rect.yPos + rect.height / 2;
       let xDist = Math.abs(rectCenterX - circle.xPos);
       let yDist = Math.abs(rectCenterY - circle.yPos);
-      
-      // side collisions
-      if(xDist < rect.width/2 + circle.radius) {
+
+      // check if circle inside rect
+      if (xDist <= (rect.width/2)) {
         return true;
-      }
-      if(yDist < rect.height/2 + circle.radius) {
+      } 
+      if (yDist <= (rect.height/2)) { 
         return true;
       }
 
@@ -79,8 +78,7 @@ export class CollisionHelper {
       if(distToCornerX*distToCornerX + distToCornerY*distToCornerY < circle.radius*circle.radius) {
         return true;
       }
-    }
-    
+    } 
     return false;
   }
 }
