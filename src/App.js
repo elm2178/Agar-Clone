@@ -18,17 +18,16 @@ class App extends Component {
     socket.on('init', this.onInit);
     socket.on('update', this.onUpdate);
 
-    // color map
-    this.colors = {};
-
     // set state
     this.state = {
       socket: socket,
       isGameOver: false,
-      colors: {},
       width: 0,
       height: 0,
     };
+
+    // create new color helper
+    this.colorHelper = new ColorHelper();
 
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
@@ -36,6 +35,8 @@ class App extends Component {
   }
 
   onInit(data) {
+    this.colorHelper.setPlayerColor(this.state.socket.id, ColorHelper.getRGBString(ColorHelper.DARK_BLUE));
+
     this.setState({
       width: data.width,
       height: data.height,
@@ -45,7 +46,6 @@ class App extends Component {
   }
 
   onUpdate(data) {
-    const colors = this.state.colors;
     let gameState = JSON.parse(data);
     let players = gameState.players;
     let food = gameState.food;
@@ -63,36 +63,24 @@ class App extends Component {
     // draw players
     for(let id in players) {
       let p = players[id];
-      let alpha = ColorHelper.getPlayerAlpha(p);
-      if( !(id in this.state.colors) ) {
-        colors[id] = ColorHelper.getEnemyRGB();
-      } 
-
+      let color = this.colorHelper.getPlayerColor(p);
       // draw rect
       ctx.beginPath();
       ctx.rect(p.xPos, p.yPos, p.width, p.height);
-      // get appropriate color
-      if(id === this.state.socket.id) {
-        ctx.fillStyle = "rgba(27, 72, 124, " + alpha +  ")";
-      } else {
-        let color = colors[id];
-        ctx.fillStyle = "rgba(" +  color.r + ", " + color.g + ", " + color.b + ", " + alpha + ")";
-      }
+      ctx.fillStyle = color;
       ctx.fill();
     }
 
     // draw food
     food.forEach(function(f) {
-      ctx.beginPath();
-      ctx.arc(f.xPos, f.yPos, f.radius, 0, 2 * Math.PI, false);
+      // get food color
       let colorWeight = ColorHelper.getFoodColorWeight(f);
       let color = ColorHelper.getColorFromGradient(ColorHelper.GREEN, ColorHelper.BROWN, colorWeight);
-      ctx.fillStyle = "rgb(" +  color.r + ", " + color.g + ", " + color.b + ")";
+      // draw circle
+      ctx.beginPath();
+      ctx.arc(f.xPos, f.yPos, f.radius, 0, 2 * Math.PI, false);
+      ctx.fillStyle = ColorHelper.getRGBString(color);
       ctx.fill();
-    });
-
-    this.setState({
-      colors: colors,
     });
   }
 
