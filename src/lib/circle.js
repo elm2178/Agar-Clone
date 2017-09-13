@@ -2,7 +2,9 @@ import { CollisionHelper } from './collisionHelper.js';
 
 export class Circle {
   /**
-   * @param {number} 
+   * @param {number} xPos
+   * @param {number} yPos
+   * @param {number} radius
    */
   constructor(xPos, yPos, radius) {
     this.xPos = xPos;
@@ -10,6 +12,9 @@ export class Circle {
     this.radius = radius;
   }
 
+  /**
+   * @param {Circle} other
+   */
   collidesWithCircle(other) {
     return CollisionHelper.circleCollision(other);
   }

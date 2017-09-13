@@ -1,12 +1,23 @@
 import { Circle } from './circle.js';
 
 export class Food extends Circle {
+  /**
+   * @param {number} xPos
+   * @param {number} yPos
+   * @param {number} radius
+   */
   constructor(xPos, yPos, radius) {
     super(xPos, yPos, radius);
   }
 }
 
 export class FoodManager {
+  /**
+   * @param {number} count
+   * @param {number} radius
+   * @param {number} width
+   * @param {number} height
+   */
   constructor(count, radius, width, height) {
     this.count = count;
     this.radius = radius;
