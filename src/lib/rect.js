@@ -16,6 +16,20 @@ export class Rect {
   }
 
   /**
+   * @param {number} lowerX
+   * @param {number} lowerY
+   * @param {number} upperX
+   * @param {number} upperY
+   */
+  capPosition(lowerX, lowerY, upperX, upperY)
+  {
+    this.xPos = Math.max(this.xPos, lowerX);
+    this.yPos = Math.max(this.yPos, lowerY);
+    this.xPos = Math.min(this.xPos, upperX - this.width);
+    this.yPos = Math.min(this.yPos, upperY - this.height);
+  }
+
+  /**
    * @param {Rect} other
    */
   collidesWithRect(other) {

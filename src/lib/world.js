@@ -1,29 +1,22 @@
 import { Player } from './player.js';
 import { Food, FoodManager } from './food.js';
+import { Constants } from './constants.js';
 
 export class World {
-  constructor(width, height) {
-    this.HEIGHT = height;
-    this.WIDTH = width;
-    this.PLAYER_WIDTH = 10;
-    this.VEL_STEP = 1;
-    this.VEL_CAP = 40;
-    this.GROWTH = 10;
-    this.FRICTION = .973;
-    this.IMMUNE = 5;
+  constructor() {
     this.players = {};
-    this.foodManager = new FoodManager(2, this.PLAYER_WIDTH/2, this.WIDTH, this.HEIGHT);
+    this.foodManager = new FoodManager(2, this);
   }
 
   createPlayer(id) {
     // random spawn position
-    let xPos = Math.random() * this.HEIGHT;
-    let yPos = Math.random() * this.WIDTH;
+    let xPos = Math.random() * Constants.WORLD_HEIGHT;
+    let yPos = Math.random() * Constants.WORLD_WIDTH;
 
     let startTime = Date.now();
     startTime += 1000 * this.IMMUNE;
 
-    this.players[id] = new Player(xPos, yPos, this.PLAYER_WIDTH, startTime, id);
+    this.players[id] = new Player(xPos, yPos, Constants.PLAYER_SIZE, startTime, id);
   }
 
   removePlayer(id) {
@@ -43,41 +36,20 @@ export class World {
   }
 
   step(timeDelta) {
-
     // step for each player
     for(let id in this.players) {
       let player = this.players[id];
-      player.updateVelocity(this.VEL_STEP);
-      player.capVelocity(-this.VEL_CAP, -this.VEL_CAP, this.VEL_CAP, this.VEL_CAP);
-      player.step(timeDelta, this.FRICTION);
-      player.capPosition(0, 0, this.WIDTH, this.HEIGHT);
+      player.updateVelocity(Constants.VEL_STEP);
+      player.step(timeDelta, Constants.FRICTION);
     }
 
-    // handle food collisions
-    for(let id in this.players) {
-      let player = this.players[id];
-      let world = this;
-      this.foodManager.food = this.foodManager.food.filter(function(f) {
-        let collision = player.collidesWithFood(f);
-        if(collision) {
-          // handle collision
-          player.grow(world.GROWTH);
-          player.capPosition(0, 0, world.WIDTH, world.HEIGHT);
-
-          return false;
-        }
-
-        return true;
-      });
-    }
+    // handle food collisions and generate new food
+    this.foodManager.update();
 
     // handle collision for each player
     for(let id in this.players) {
       this.handlePlayerCollisions(this.players[id]);
     }
-
-    // generate new food
-    this.foodManager.update();
   }
 
   handlePlayerCollisions(player) {
@@ -94,14 +66,12 @@ export class World {
         // 2. You are tied and win the coin toss
         if(player.width > otherPlayer.width || (player.width === otherPlayer.width && player.surviveTie()) ) {
           this.removePlayer(otherPlayer.id, "You've been chomped");
-          player.grow(this.GROWTH);
-          player.capPosition(0, 0, this.WIDTH, this.HEIGHT);
+          player.grow(Constants.PLAYER_GROWTH);
           recursePlayer = player;
         }
         else {
           this.removePlayer(player.id, "You've been chomped");
-          otherPlayer.grow(this.GROWTH);
-          otherPlayer.capPosition(0, 0, this.WIDTH, this.HEIGHT);
+          otherPlayer.grow(Constants.PLAYER_GROWTH);
           recursePlayer = otherPlayer;
         }
 

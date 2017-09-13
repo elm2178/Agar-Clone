@@ -1,5 +1,6 @@
 import { Rect } from './rect.js';
 import { Food } from './food.js';
+import { Constants } from './constants.js';
 
 export class Player extends Rect {
   /**
@@ -29,20 +30,10 @@ export class Player extends Rect {
     };
   }
 
-  /**
-   * @param {number} lowerX
-   * @param {number} lowerY
-   * @param {number} upperX
-   * @param {number} upperY
-   */
-  capPosition(lowerX, lowerY, upperX, upperY)
-  {
-    this.xPos = Math.max(this.xPos, lowerX);
-    this.yPos = Math.max(this.yPos, lowerY);
-    this.xPos = Math.min(this.xPos, upperX - this.width);
-    this.yPos = Math.min(this.yPos, upperY - this.height);
+  capPosition() {
+    super.capPosition(0, 0, Constants.WORLD_WIDTH, Constants.WORLD_HEIGHT);
   }
-
+ 
   /**
    * @param {number} lowerX
    * @param {number} lowerY
@@ -82,6 +73,8 @@ export class Player extends Rect {
     if(this.movement.left) {
       this.xVel += -step;
     }
+
+    this.capVelocity(-Constants.VEL_CAP, -Constants.VEL_CAP, Constants.VEL_CAP, Constants.VEL_CAP);
   }
 
   /**
@@ -96,6 +89,8 @@ export class Player extends Rect {
     // update pos
     this.xPos += this.xVel * timeDelta;
     this.yPos += this.yVel * timeDelta;
+
+    this.capPosition();
   }
 
   /**
@@ -129,5 +124,7 @@ export class Player extends Rect {
     this.height += size;
     this.xPos -= Math.floor(size/2);
     this.yPos -= Math.floor(size/2);
+
+    this.capPosition();
   }
 }
