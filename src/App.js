@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import openSocket from 'socket.io-client';
+import { ColorHelper } from './lib/colorHelper.js';
 
 class App extends Component {
   constructor(props) {
@@ -34,21 +35,6 @@ class App extends Component {
     window.addEventListener("resize", this.onResize);
   }
 
-  getEnemyRGB()
-  {
-    let redR = 255;
-
-    let orangeR = 160;
-    let orangeG = 161;
-    let orangeB = 100;
-
-    let r = Math.floor((redR - orangeR) * Math.random() + orangeR);
-    let g = Math.floor(orangeG * Math.random());
-    let b = Math.floor(orangeB * Math.random());
-    
-    return {r: r, g: g, b: b};
-  }
-
   onInit(data) {
     this.setState({
       width: data.width,
@@ -77,9 +63,9 @@ class App extends Component {
     // draw players
     for(let id in players) {
       let p = players[id];
-      let alpha = p.startTime > Date.now() ? (Math.sin(Date.now()/30) + 1)/2 : 1;
+      let alpha = ColorHelper.getPlayerAlpha(p);
       if( !(id in this.state.colors) ) {
-        colors[id] = this.getEnemyRGB();
+        colors[id] = ColorHelper.getEnemyRGB();
       } 
 
       // draw rect
@@ -99,7 +85,9 @@ class App extends Component {
     food.forEach(function(f) {
       ctx.beginPath();
       ctx.arc(f.xPos, f.yPos, f.radius, 0, 2 * Math.PI, false);
-      ctx.fillStyle = 'green';
+      let colorWeight = ColorHelper.getFoodColorWeight(f);
+      let color = ColorHelper.getColorFromGradient(ColorHelper.GREEN, ColorHelper.BROWN, colorWeight);
+      ctx.fillStyle = "rgb(" +  color.r + ", " + color.g + ", " + color.b + ")";
       ctx.fill();
     });
 

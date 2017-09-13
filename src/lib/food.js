@@ -12,6 +12,7 @@ export class Food extends Circle {
   constructor(xPos, yPos, radius, endTime) {
     super(xPos, yPos, radius);
     this.endTime = endTime;
+    this.startTime = Date.now();
   }
 
   isExpired() {

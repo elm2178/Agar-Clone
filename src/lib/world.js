@@ -14,7 +14,7 @@ export class World {
     let yPos = Math.random() * Constants.WORLD_WIDTH;
 
     let startTime = Date.now();
-    startTime += 1000 * this.IMMUNE;
+    startTime += 1000 * Constants.PLAYER_INVINC;
 
     this.players[id] = new Player(xPos, yPos, Constants.PLAYER_SIZE, startTime, id);
   }
